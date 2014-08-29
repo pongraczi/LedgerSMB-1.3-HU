@@ -19,11 +19,8 @@ Changelog for 1.3.42
 * Fix for invoice with shipto linking to wrong one on report (Chris T, 1104)
 * Fix for shipto's not being automatically checked (Chris T, 1100)
 * Fixed forex rounding issue with single payments not posting (Chris T)
-<<<<<<< HEAD
 * Trial balance shows account numbers for headers, too (Pongracz I - extra)
 * Date input field improvements - autocomplete (Pongracz I - extra)
-=======
->>>>>>> 669e40432083f5c15e578f666f22b50dbf57066a
 * Fixed typo in search payment form: aligh -> align (Pongracz I)
 
 Chris T is Chris Travers
