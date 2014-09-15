@@ -9,7 +9,7 @@
 DROP FUNCTION IF EXISTS employee__save
 (in_entity_id int, in_start_date date, in_end_date date, in_dob date, 
 	in_role text, in_ssn text, in_sales bool, in_manager_id int, 
-        in_employee_number text)
+        in_employee_number text);
 CREATE OR REPLACE FUNCTION employee__save 
 (in_entity_id int, in_start_date date, in_end_date date, in_dob date, 
 	in_role text, in_ssn text, in_sales bool, in_manager_id int, 
@@ -114,7 +114,7 @@ CREATE OR REPLACE FUNCTION employee__get
 returns employee_result as
 $$
    SELECT p.entity_id, p.id, s.salutation, 
-          p.first_name, p.middle_name, p.last_name, ee.is_manager
+          p.first_name, p.middle_name, p.last_name, ee.is_manager,
           ee.startdate, ee.enddate, ee.role, ee.ssn, ee.sales, ee.manager_id,
           mp.first_name, mp.last_name, ee.employeenumber, ee.dob, e.country_id
      FROM person p
