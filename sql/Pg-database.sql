@@ -2368,7 +2368,7 @@ $$This table stores the tree structure of the menu.$$;
 -- Name: menu_node_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ledgersmb
 --
 
-SELECT pg_catalog.setval('menu_node_id_seq', 242, true);
+SELECT pg_catalog.setval('menu_node_id_seq', 243, true);
 
 
 --

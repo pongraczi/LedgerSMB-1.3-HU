@@ -45,6 +45,7 @@ your software.
 =cut
 
 package LedgerSMB::Setting;
+use LedgerSMB::App_State;
 use base qw(LedgerSMB::DBObject);
 use strict;
 our $VERSION = '1.0.0';
@@ -64,20 +65,35 @@ sub increment {
 
     my $self     = shift;
     my $myconfig = shift;
+    my $key = shift;
+    $key ||= $self->{key};
 
     # Long-run, we may want to run this via Parse::RecDescent, but this is
     # at least a start for here.  Chris T.
 
     # Replaces Form::UpdateDefaults
 
-    my ($retval) = $self->exec_method('funcname' => 'setting_increment');
+    my ($retval) = $self->call_procedure(procname => 'setting_increment',
+                                             args => [$key]) ;
     my $value = $retval->{setting_increment};
+
+    my $var = _increment_process($value, $self, $myconfig);
+
+    $self->{value} = $var if $self->{key};
+    return $var;
+}
+
+# Increment processing routine, used by only related classes.
+#
+sub _increment_process{
+    my ($value, $self ) = @_;
 # check for and replace
 # <?lsmb DATE ?>, <?lsmb YYMMDD ?>, <?lsmb YEAR ?>, <?lsmb MONTH ?>, <?lsmb DAY ?> or variations of
 # <?lsmb NAME 1 1 3 ?>, <?lsmb BUSINESS ?>, <?lsmb BUSINESS 10 ?>, <?lsmb CURR... ?>
 # <?lsmb DESCRIPTION 1 1 3 ?>, <?lsmb ITEM 1 1 3 ?>, <?lsmb PARTSGROUP 1 1 3 ?> only for parts
 # <?lsmb PHONE ?> for customer and vendors
 
+    my $myconfig = $LedgerSMB::App_State::User;
     my $dbvar = $value;
     my $var   = $value;
     my $str;
@@ -155,9 +171,7 @@ sub increment {
             }
         }
     }
-
-    $self->{value} = $var;
-    $var;
+    return $var;
 }
 
 sub get_currencies {
@@ -166,4 +180,21 @@ sub get_currencies {
     @{$self->{currencies}} = $self->_parse_array($data[0]->{setting__get_currencies});
     return @{$self->{currencies}};
 }
-            
+
+sub set {
+    my ($self, $key, $value) = @_;
+    $key ||= $self->{key};
+    $value ||= $self->{value};
+    $self->call_procedure(procname => 'setting_set',
+                              args => [$key, $value]);
+}
+
+sub accounts_by_link {
+    my ($self, $link) = @_;
+    my @results = $self->call_procedure(procname => 'account__get_by_link_desc',
+                              args => [$link]);
+    for my $ref (@results){
+        $ref->{text} = "$ref->{accno} -- $ref->{description}";
+    }
+    return \@results;
+}

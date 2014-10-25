@@ -1361,10 +1361,11 @@ WITH INHERIT NOLOGIN;
 
 -- TODO GRANT SELECT ON ALL TABLES
 
-INSERT INTO menu_acl (node_id, acl_type, role_name)
-values (134, 'allow', 'lsmb_<?lsmb dbname ?>__backup');
-INSERT INTO menu_acl (node_id, acl_type, role_name)
-values (135, 'allow', 'lsmb_<?lsmb dbname ?>__backup');
+-- Removed by pongraczi, as backup moved to setup.pl
+-- INSERT INTO menu_acl (node_id, acl_type, role_name)
+-- values (134, 'allow', 'lsmb_<?lsmb dbname ?>__backup');
+-- INSERT INTO menu_acl (node_id, acl_type, role_name)
+-- values (135, 'allow', 'lsmb_<?lsmb dbname ?>__backup');
 
 
 CREATE ROLE "lsmb_<?lsmb dbname ?>__system_admin"
@@ -1574,3 +1575,14 @@ INSERT INTO menu_acl (node_id, acl_type, role_name)
 values (192, 'allow', 'public');
 INSERT INTO menu_acl (node_id, acl_type, role_name)
 values (193, 'allow', 'public');
+
+
+--  Sequences related things
+CREATE ROLE "lsmb_<?lsmb dbname ?>__sequences_edit"
+WITH INHERIT NOLOGIN;
+
+GRANT ALL ON lsmb_sequence
+TO "lsmb_<?lsmb dbname ?>__sequences_edit";
+
+INSERT INTO menu_acl (node_id, role_name, acl_type) values
+(243, 'lsmb_<?lsmb dbname ?>__sequences_edit', 'allow');
