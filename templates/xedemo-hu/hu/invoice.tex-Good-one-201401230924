@@ -1,0 +1,167 @@
+<?lsmb FILTER latex -?>
+\documentclass{scrartcl}
+\usepackage{tabularx}
+\usepackage{fontspec}
+\usepackage{longtable}
+\setmainfont{LiberationSans}
+\usepackage[a4paper,top=1.2cm,bottom=1.2cm,left=1.2cm,right=1.0cm]{geometry}
+\usepackage{graphicx}
+\setlength\LTleft{0pt}
+\setlength\LTright{0pt}
+\begin{document}
+
+\pagestyle{myheadings}
+\thispagestyle{empty}
+
+<?lsmb BLOCK multiline -?>
+\begin{minipage}{2in}
+\smallskip
+\raggedright
+<?lsmb string ?>
+\medskip
+\end{minipage}
+<?lsmb- END -?>
+
+\newsavebox{\ftr}
+\sbox{\ftr}{
+  \parbox{\textwidth}{
+  \tiny
+  \rule[1.5em]{\textwidth}{0.5pt}
+<?lsmb text('A fizetési határidő a teljesítéstől számított [_1] nap.', terms) ?>
+<?lsmb text('Késedelmes fizetés esetén a fizetendő kamat a mindenkori jegybanki alapkamat kétszerese, aminek kezdete [_1] és a teljes összeg kifizetéséig tart. A számla teljes kifizetéséig a termék a [_2] tulajdona.', duedate, company) ?>
+<?lsmb text('Termék visszaküldése előtt vegye fel a kapcsolatot és egyeztessen a [_1] céggel. A visszaküldésre szánt áru megfelelő csomagolásáról, biztosításról és szállításáról a feladó gondoskodik. [_1] nem felelős a szállítás során esetlegesen előforduló sérülésekért.', company) ?>
+  }
+}
+
+
+
+<?lsmb INCLUDE letterhead.tex ?>
+
+\markboth{<?lsmb company ?>\hfill <?lsmb invnumber ?>}{<?lsmb company ?>\hfill <?lsmb invnumber ?>}
+
+\vspace*{0.1cm}
+
+\hfill
+
+\begin{tabularx}{\textwidth}{*{3}{|X}|} \hline
+  \textbf{Számlázási cím} & \textbf{Szállítási cím}  & \textbf{Ügyféladatok} \\ [0.3em]
+   <?lsmb name ?>       & <?lsmb shiptoname ?>          & Cégkód: <?lsmb entity_control_code ?> \\
+   <?lsmb address1 ?>   & <?lsmb shiptoaddress1 ?>      & Vevőkód: <?lsmb meta_number ?> \\
+   <?lsmb address2 ?>   & <?lsmb shiptoaddress2 ?>      & \\
+   <?lsmb city ?>       & <?lsmb shiptocity ?>          & \\
+   <?lsmb IF state -?> \hspace{-0.1cm}, <?lsmb state ?> <?lsmb END ?> <?lsmb zipcode ?> & <?lsmb shiptocity ?> <?lsmb IF shiptostate -?> \hspace{-0.1cm}, <?lsmb shiptostate ?><?lsmb END ?> <?lsmb shiptozipcode ?> & \\
+   <?lsmb country ?>    & <?lsmb shiptocountry ?>       & \\ [0.3em] 
+  \hline
+\end{tabularx}
+
+\vspace{0.5cm}
+
+\textbf{\MakeUppercase{S Z Á M L A}}  \hfill \textbf{Számlaszám: <?lsmb invnumber ?>}
+\hfill
+
+\vspace{0.5cm}
+
+\begin{tabularx}{\textwidth}{*{6}{|X}|} \hline
+  \textbf{Kelte} & \textbf{Teljesítés} 
+      & \textbf{Határidő} & \textbf{Rendelésszám}
+      & \textbf{Értékesítő} 
+      & \textbf{Fizetés} \\ [0.5em]
+  \hline
+  <?lsmb crdate ?> & <?lsmb invdate ?> & <?lsmb duedate ?> & <?lsmb ordnumber ?> & <?lsmb employee ?>
+  & <?lsmb shipvia ?> \\
+  \hline
+\end{tabularx}
+
+\vspace{0.2cm}
+
+\begin{longtable}{@{\extracolsep{\fill}}r|llcrlrr|r}
+
+  \textbf{Sor} 
+  & \textbf{Cikkszám}
+  & \textbf{Megnevezés} 
+  & \textbf{Száll.} 
+  & \textbf{Menny.} 
+  & \textbf{Me} 
+  & \textbf{Egységár} 
+  & \textbf{E} 
+  & \textbf{Összeg} 
+\endhead
+\hline \hline
+<?lsmb FOREACH number ?>
+<?lsmb lc = loop.count - 1 ?>
+  <?lsmb runningnumber.${lc} ?> & 
+  <?lsmb number.${lc} ?> & 
+  <?lsmb INCLUDE multiline string = description.${lc} ?> & 
+  <?lsmb deliverydate.${lc} ?> &
+  <?lsmb qty.${lc} ?> & 
+  <?lsmb unit.${lc} ?> &
+  <?lsmb sellprice.${lc} ?> &
+  <?lsmb discountrate.${lc} ?> &
+  <?lsmb linetotal.${lc} ?> \\
+<?lsmb END ?>
+\hline \hline
+
+\multicolumn{8}{r|}{Nettó összeg} & <?lsmb subtotal ?> \\*
+<?lsmb FOREACH tax ?>
+<?lsmb lc = loop.count - 1 ?>
+\multicolumn{8}{r|}{<?lsmb taxdescription.${lc} ?> alapja <?lsmb taxbase.${lc} ?> }
+ & <?lsmb tax.${lc} ?> \\*
+<?lsmb END ?>
+\hline
+\multicolumn{8}{r|}{Számla végösszege} & <?lsmb invtotal ?>\\
+\multicolumn{8}{l}{Azaz: <?lsmb text_amount ?> <?lsmb currency ?>}\\
+\hline
+\hline
+<?lsmb IF paid ?>
+\multicolumn{8}{r|}{Fizetve} & - <?lsmb paid ?> \\*
+<?lsmb END ?>
+\hline
+<?lsmb IF total ?>
+\multicolumn{8}{r|}{Esedékes egyenleg} & <?lsmb total ?>\\
+<?lsmb END ?>
+
+\end{longtable}
+
+
+\parbox{\textwidth}{
+
+\vspace{0.2cm}
+
+\hfill
+A feltüntetett összegek <?lsmb currency ?>-ban értendőek.
+
+\vspace{12pt}
+
+<?lsmb FOREACH P IN notes.split('\n\n') ?>
+<?lsmb P ?>\medskip
+
+<?lsmb END ?>
+}
+
+\vfill
+
+<?lsmb IF paid_1 ?>
+\begin{tabularx}{10cm}{@{}lXlr@{}}
+  \textbf{<?lsmb text('Payments') ?>} & & & \\
+  \hline
+  \textbf{<?lsmb text('Date') ?>} & & \textbf{<?lsmb text('Source') ?>} 
+  & \textbf{<?lsmb text('Amount') ?>} \\
+<?lsmb END ?>
+<?lsmb FOREACH payment ?>
+<?lsmb lc = loop.count - 1 ?>
+  <?lsmb paymentdate.${lc} ?> & <?lsmb paymentaccount.${lc} ?> & <?lsmb paymentsource.${lc} ?> & <?lsmb payment.${lc} ?> \\
+<?lsmb END ?>
+<?lsmb IF paid_1 ?>
+\end{tabularx}
+<?lsmb END ?>
+
+\vspace{1cm}
+
+\centerline{\textbf{Köszönjük, hogy nálunk vásárolt!}}
+
+\rule{\textwidth}{0.5pt}
+
+\usebox{\ftr}
+
+\end{document}
+<?lsmb END ?>
