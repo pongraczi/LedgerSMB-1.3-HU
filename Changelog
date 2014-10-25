@@ -19,6 +19,14 @@ Changelog for 1.3.46
 * Fixed bug 1260, Multiple vendor skus breaks display of invoice (Chris T)
 * Added Hungarian maintainers to the file CONTRIBUTOS (Pongracz I - extra)
 * Added complex modification to be able to use sequences in 1.3 - backport from 1.4 (Pongracz I - extra)
+* Added Extended COA, including Hungarian TEAOR'08 list under System/SIC (Pongracz I - extra)
+* Default language is HU (Pongracz I - extra)
+* Default numberformat is 1000,00 (Pongracz I - extra)
+* Menu reordering (Pongracz I - extra)
+* login.html changes: links added, changed (Pongracz I - extra)
+* Default print format is PDF, output is Screen (Pongracz I - extra)
+* Sales invoice number readonly -> cannot change (Pongracz I - extra)
+
 
 Chris T is Chris Travers
 Pongracz I is Pongracz Istvan

@@ -283,8 +283,8 @@ sub prepare_invoice {
     $form->{type}     = "invoice";
     $form->{formname} = "invoice";
     $form->{sortby} ||= "runningnumber";
-    $form->{format} = "postscript" if $myconfig{printer};
-    $form->{media} = $myconfig{printer};
+    $form->{format} = "pdf" if $myconfig{printer};
+    $form->{media} = "screen";
 
     $form->{selectformname} =
       qq|<option value="invoice">|
@@ -577,7 +577,7 @@ function on_return_submit(event){
 	      $employee
 	      <tr class="invnumber-row">
 		<th align=right nowrap>| . $locale->text('Invoice Number') . qq|</th>
-                <td><input name="invnumber" size="20" value="$form->{invnumber}">| .  $form->sequence_dropdown('sinumber') . qq|</td>
+                <td><input name="invnumber" size="20" value="$form->{invnumber}" readonly>| .  $form->sequence_dropdown('sinumber') . qq|</td>
 	      </tr>
 	      <tr class="ordnumber-row">
 		<th align=right nowrap>| . $locale->text('Order Number') . qq|</th>

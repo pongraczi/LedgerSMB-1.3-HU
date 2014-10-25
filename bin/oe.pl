@@ -210,8 +210,8 @@ qq|<option value="$_->{description}--$_->{id}">$_->{description}\n|;
 
 sub prepare_order {
 
-    $form->{format}   = "postscript" if $myconfig{printer};
-    $form->{media}    = $myconfig{printer};
+    $form->{format}   = "pdf" if $myconfig{printer};
+    $form->{media}    = "screen";
     $form->{formname} = $form->{type};
     $form->{sortby} ||= "runningnumber";
     $form->{currency} =~ s/ //g;

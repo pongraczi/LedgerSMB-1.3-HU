@@ -464,6 +464,7 @@ COMMENT ON TABLE country_tax_form IS
 $$ This table was designed for holding information relating to reportable
 sales or purchases, such as IRS 1099 forms and international equivalents.$$;
 
+
 -- BEGIN new entity management
 CREATE TABLE entity_class (
   id serial primary key,
@@ -854,7 +855,7 @@ CREATE TABLE entity_credit_account (
     terms int2 default 0,
     meta_number varchar(32),
     business_id int,
-    language_code varchar(6) DEFAULT 'en' references language(code) ON DELETE SET DEFAULT,
+    language_code varchar(6) DEFAULT 'hu' references language(code) ON DELETE SET DEFAULT,
     pricegroup_id int references pricegroup(id),
     curr char(3),
     startdate date DEFAULT CURRENT_DATE,
@@ -1052,6 +1053,19 @@ check_prefix|CK
 \.
 
 -- */
+
+-- Sequence handling
+
+
+CREATE TABLE lsmb_sequence (
+   label text primary key,
+   setting_key text not null references defaults(setting_key),
+   prefix text,
+   suffix text,
+   sequence text not null default '0000001',
+   accept_input bool default true
+);
+
 -- batch stuff
 
 CREATE TABLE batch_class (
@@ -1797,11 +1811,11 @@ $$ Translation information for partsgroups.$$;
 --
 CREATE TABLE user_preference (
     id int PRIMARY KEY REFERENCES users(id),
-    language varchar(6) REFERENCES language(code),
-    stylesheet text default 'ledgersmb.css' not null,
+    language varchar(6) default 'hu' REFERENCES language(code),
+    stylesheet text default 'gnome2.css' not null,
     printer text,
     dateformat text default 'yyyy-mm-dd' not null,
-    numberformat text default '1000.00' not null
+    numberformat text default '1000,00' not null
 );
 
 -- user_preference is here due to a dependency on language.code
@@ -2376,17 +2390,35 @@ SELECT pg_catalog.setval('menu_node_id_seq', 243, true);
 --
 
 COPY menu_node (id, label, parent, "position") FROM stdin;
-205	Transaction Approval	0	5
-206	Batches	205	1
-46	HR	0	6
-50	Order Entry	0	7
-63	Shipping	0	8
-67	Quotations	0	9
-73	General Journal	0	10
-77	Goods and Services	0	11
 0	Top-level	\N	0
 1	AR	0	1
-2	Add Transaction	1	1
+16	Point of Sale	0	2
+21	AP	0	3
+35	Cash	0	4
+205	Transaction Approval	0	5
+67	Quotations	0	6
+50	Order Entry	0	7
+63	Shipping	0	8
+77	Goods and Services	0	9
+98	Projects	0	10
+116	Batch Printing	0	11
+217	Tax Forms	0	12
+46	HR	0	13
+73	General Journal	0	14
+227	Fixed Assets	0	15
+109	Reports	0	16
+128	System	0	17
+190	Stylesheet	0	18
+191	Preferences	0	19
+192	New Window	0	99
+193	Logout	0	100
+3	Sales Invoice	1	1
+195	Credit Invoice	1	2
+2	Add Transaction	1	3
+194	Credit Note	1	4
+198	AR Voucher	1	5
+4	Reports	1	6
+11	Customers	1	7
 5	Transactions	4	1
 6	Outstanding	4	2
 7	AR Aging	4	3
@@ -2396,14 +2428,17 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 13	Reports	11	2
 14	Search	13	1
 15	History	13	2
-16	Point of Sale	0	2
 17	Sale	16	1
 18	Open	16	2
 19	Receipts	16	3
 20	Close Till	16	4
-21	AP	0	3
-22	Add Transaction	21	1
-145	Add Department	144	1
+23	Vendor Invoice	21	1
+197	Debit Invoice	21	2
+22	Add Transaction	21	3
+196	Debit Note	21	4
+199	AP Voucher	21	5
+24	Reports	21	6
+30	Vendors	21	7
 25	Transactions	24	1
 26	Outstanding	24	2
 27	AP Aging	24	3
@@ -2413,12 +2448,14 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 32	Reports	30	2
 33	Search	32	1
 34	History	32	2
-35	Cash	0	4
 36	Receipt	35	1
+37	Use AR Overpayment	35	2
 38	Payment	35	3
 223	Use Overpayment	35	4
-37	Use AR Overpayment	35	2
-146	List Departments	144	2
+200	Vouchers	35	5
+40	Transfer	35	6
+45	Reconciliation	35	7
+41	Reports	35	8
 42	Receipts	41	1
 43	Payments	41	2
 44	Reconciliation	41	3
@@ -2428,12 +2465,12 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 51	Sales Order	50	1
 52	Purchase Order	50	2
 53	Reports	50	3
+56	Generate	50	4
+60	Consolidate	50	5
 54	Sales Orders	53	1
 55	Purchase Orders	53	2
 57	Sales Orders	56	1
 58	Purchase Orders	56	2
-56	Generate	50	4
-60	Consolidate	50	5
 61	Sales Orders	60	1
 62	Purchase Orders	60	2
 64	Ship	63	1
@@ -2455,6 +2492,7 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 83	Add Pricegroup	77	6
 84	Stock Assembly	77	7
 85	Reports	77	8
+95	Translations	77	9
 86	All Items	85	1
 87	Parts	85	2
 88	Requirements	85	3
@@ -2464,18 +2502,17 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 92	Pricegroups	85	7
 93	Assembly	85	8
 94	Components	85	9
-95	Translations	77	9
 96	Description	95	1
 97	Partsgroup	95	2
 99	Add Project	98	1
 100	Add Timecard	98	2
 101	Generate	98	3
-102	Sales Orders	101	1
 103	Reports	98	4
+107	Translations	98	5
+102	Sales Orders	101	1
 104	Search	103	1
 105	Transactions	103	2
 106	Time Cards	103	3
-107	Translations	98	5
 108	Description	107	1
 110	Chart of Accounts	109	1
 111	Trial Balance	109	2
@@ -2496,13 +2533,26 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 129	Audit Control	128	1
 130	Taxes	128	2
 131	Defaults	128	3
-132	Yearend	128	4
+243	Sequences	128	4
+132	Yearend	128	5
+219	Admin Users	128	6
+136	Chart of Accounts	128	7
+141	Warehouses	128	8
+144	Departments	128	9
+147	Type of Business	128	10
+150	Language	128	11
+153	SIC	128	12
+156	HTML Templates	128	13
+172	LaTeX Templates	128	14
+188	Text Templates	128	15
 137	Add Accounts	136	1
 138	List Accounts	136	2
 139	Add GIFI	136	3
 140	List GIFI	136	4
 142	Add Warehouse	141	1
 143	List Warehouse	141	2
+145	Add Department	144	1
+146	List Departments	144	2
 148	Add Business	147	1
 149	List Businesses	147	2
 151	Add Language	150	1
@@ -2542,55 +2592,20 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 187	Timecard	172	15
 242	Letterhead	172	16
 189	POS Invoice	188	1
-198	AR Voucher	1	2
-3	Sales Invoice	1	3
-11	Customers	1	7
-4	Reports	1	6
-194	Credit Note	1	4
-195	Credit Invoice	1	5
-199	AP Voucher	21	2
-23	Vendor Invoice	21	3
-24	Reports	21	6
-30	Vendors	21	7
-196	Debit Note	21	4
-197	Debit Invoice	21	5
-200	Vouchers	35	5
-40	Transfer	35	6
-41	Reports	35	8
-45	Reconciliation	35	7
-203	Receipts	200	3
-204	Reverse Receipts	200	4
 201	Payments	200	1
 202	Reverse Payment	200	2
-98	Projects	0	12
-109	Reports	0	13
-115	Recurring Transactions	0	14
+203	Receipts	200	3
+204	Reverse Receipts	200	4
+206	Batches	205	1
 210	Drafts	205	2
 211	Reconciliation	205	3
-217	Tax Forms	0	15
+115	Recurring Transactions	205	4
 218	Add Tax Form	217	1
-219	Admin Users	128	5
-188	Text Templates	128	15
-172	LaTeX Templates	128	14
-156	HTML Templates	128	13
-153	SIC	128	12
-150	Language	128	11
-147	Type of Business	128	10
-144	Departments	128	9
-141	Warehouses	128	8
-136	Chart of Accounts	128	7
+225	List Tax Forms	217	2
+226	Reports	217	3
 220	Add User	219	1
 221	Search Users	219	2
 222	Sessions	219	3
-225	List Tax Forms	217	2
-226	Reports	217	3
-227	Fixed Assets	0	17
-193	Logout	0	23
-192	New Window	0	22
-191	Preferences	0	21
-190	Stylesheet	0	20
-128	System	0	19
-116	Batch Printing	0	18
 228	Asset Classes	227	1
 229	Assets	227	2
 230	Add Class	228	1
@@ -2599,9 +2614,9 @@ COPY menu_node (id, label, parent, "position") FROM stdin;
 233	Search Assets	229	2
 235	Import	229	3
 234	Depreciate	229	4
-237	Net Book Value	236	1
 238	Disposal	229	5
 236	Reports	229	11
+237	Net Book Value	236	1
 239	Depreciation	236	2
 240	Disposal	236	3
 \.
@@ -3258,6 +3273,8 @@ COPY menu_attribute (node_id, attribute, value, id) FROM stdin;
 239	depreciation	1	639
 240	module	asset.pl	640
 240	action	search_reports	641
+243	module	configuration.pl	642
+243	action	sequence_screen	643
 \.
 
 
