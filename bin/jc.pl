@@ -110,7 +110,7 @@ qq|<option value="$ref->{projectnumber}--$ref->{id}">$ref->{projectnumber} ($ref
         $form->{selectpartnumber} = "<option>\n";
         foreach $ref ( @{ $form->{all_parts} } ) {
             $form->{selectpartnumber} .=
-qq|<option value="$ref->{partnumber}--$ref->{id}">$ref->{partnumber}\n|;
+qq|<option value="$ref->{partnumber}--$ref->{id}">$ref->{partnumber}--$ref->{description}\n|;
             if ( $form->{partnumber} eq "$ref->{partnumber}--$ref->{id}" ) {
                 if ( $form->{partnumber} ne $form->{oldpartnumber} ) {
                     for (qw(description unit sellprice pricematrix)) {
