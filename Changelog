@@ -26,7 +26,7 @@ Changelog for 1.3.46
 * login.html changes: links added, changed (Pongracz I - extra)
 * Default print format is PDF, output is Screen (Pongracz I - extra)
 * Sales invoice number readonly -> cannot change (Pongracz I - extra)
-* On Timesheet screen, description displayed instead of partnumber (Pongracz I - extra)
+* On Timecard screen, description displayed instead of partnumber (Pongracz I - extra)
 
 
 Chris T is Chris Travers
