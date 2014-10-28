@@ -1342,6 +1342,10 @@ sub print_options {
             text => $locale->text('Quotation'),
             value => 'sales_quotation',
             };
+        push @{$options{formname}{options}}, {
+            text => $locale->text('Contract Quotation'),
+            value => 'contract_quotation',
+            };
     } elsif ($form->{type} eq 'request_quotation') {
         push @{$options{formname}{options}}, {
             text => $locale->text('RFQ'),
@@ -1351,6 +1355,14 @@ sub print_options {
         push @{$options{formname}{options}}, {
             text => $locale->text('Sales Order'),
             value => 'sales_order',
+            };
+        push @{$options{formname}{options}}, {
+            text => $locale->text('Payment Request'),
+            value => 'payment_request',
+            };
+        push @{$options{formname}{options}}, {
+            text => $locale->text('Service Contract'),
+            value => 'service_contract',
             };
         push @{$options{formname}{options}}, {
             text => $locale->text('Work Order'),
@@ -1533,6 +1545,20 @@ sub print_form {
         $numberfld     = "sonumber";
         $order         = 1;
     }
+    if ( $form->{formname} eq 'payment_request' ) {
+        $inv           = "ord";
+        $due           = "req";
+        $form->{label} = $locale->text('Payment Request');
+        $numberfld     = "sonumber";
+        $order         = 1;
+    }
+    if ( $form->{formname} eq 'service_contract' ) {
+        $inv           = "ord";
+        $due           = "req";
+        $form->{label} = $locale->text('Service Contract');
+        $numberfld     = "sonumber";
+        $order         = 1;
+    }
     if ( $form->{formname} eq 'work_order' ) {
         $inv           = "ord";
         $due           = "req";
@@ -1592,6 +1618,13 @@ sub print_form {
         $inv           = "quo";
         $due           = "req";
         $form->{label} = $locale->text('Quotation');
+        $numberfld     = "sqnumber";
+        $order         = 1;
+    }
+    if ( $form->{formname} eq 'contract_quotation' ) {
+        $inv           = "quo";
+        $due           = "req";
+        $form->{label} = $locale->text('Contract Quotation');
         $numberfld     = "sqnumber";
         $order         = 1;
     }

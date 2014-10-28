@@ -1,0 +1,143 @@
+<?lsmb FILTER latex -?>
+\documentclass{scrartcl}
+\usepackage{tabularx}
+\usepackage{fontspec}
+\usepackage{longtable}
+\setmainfont{LiberationSans}
+\usepackage[a4paper,top=1.2cm,bottom=1.2cm,left=1.2cm,right=1.0cm]{geometry}
+\usepackage{graphicx}
+\setlength\LTleft{0pt}
+\setlength\LTright{0pt}
+\begin{document}
+
+\pagestyle{myheadings}
+\thispagestyle{empty}
+
+<?lsmb BLOCK multiline -?>
+\begin{minipage}{2in}
+\smallskip
+\raggedright
+<?lsmb string ?>
+\medskip
+\end{minipage}
+<?lsmb- END -?>
+
+\newsavebox{\ftr}
+\sbox{\ftr}{
+  \parbox{\textwidth}{
+  \tiny
+  \rule[0.5em]{\textwidth}{0.5pt}
+<?lsmb text('Általános szállítási feltételek: A fizetési határidő egyedi megállapodás hiányában a teljesítéstől számított [_1] nap.', terms) ?>
+<?lsmb text('Késedelmes fizetés esetén a fizetendő kamat a mindenkori jegybanki alapkamat kétszerese, aminek kezdete a számla esedékessége és a teljes összeg kifizetéséig tart. A számla teljes kifizetéséig a termék a [_2] tulajdona.', duedate, company) ?>
+<?lsmb text('Termék visszaküldése előtt vegye fel a kapcsolatot és egyeztessen a [_1] céggel. A visszaküldésre szánt áru megfelelő csomagolásáról, biztosításról és szállításáról a feladó gondoskodik. [_1] nem felelős a szállítás során esetlegesen előforduló sérülésekért.', company) ?>
+  }
+}
+
+<?lsmb INCLUDE letterhead.tex ?>
+
+\Large \textbf{\MakeUppercase{DÍJBEKÉRŐ}} \hfill \textbf{Rendelési szám: <?lsmb ordnumber ?>}
+<?lsmb IF ponumber -?>\\ \small \textbf{Referencia: <?lsmb ponumber ?>} <?lsmb END ?>
+
+\vspace{0.25cm}
+
+\small
+\begin{tabularx}{\textwidth}{*{3}{|X}|} 
+  \hline
+  \multicolumn{3}{|c|}   {\textbf{Vevő adatai}}    \\ [0.3em]
+  \hline
+  \textbf{Számlázási cím} & \textbf{Szállítási cím}  & \textbf{Ügyféladatok} \\ [0.3em]
+   <?lsmb name ?>       & <?lsmb shiptoname ?>          & Cégkód: <?lsmb entity_control_code ?> \\
+   <?lsmb address1 ?>   & <?lsmb shiptoaddress1 ?>      & Vevőkód: <?lsmb meta_number ?> \\
+   <?lsmb address2 ?>   & <?lsmb shiptoaddress2 ?>      & Adószám: <?lsmb tax_id ?> \\
+   <?lsmb city ?>       & <?lsmb shiptocity ?>          & \\
+   <?lsmb IF state -?> \hspace{-0.1cm}, <?lsmb state ?> <?lsmb END ?> <?lsmb zipcode ?> & <?lsmb shiptozipcode ?> & \\
+   <?lsmb country ?>    & <?lsmb shiptocountry ?>       & \\ [0.3em] 
+  \hline
+\end{tabularx}
+
+\vspace{0.5cm}
+
+{\footnotesize
+\begin{tabularx}{\textwidth}{*{6}{|X}|} \hline
+  \textbf{Rendelés} & \textbf{Dátum} 
+  & \textbf{Fizetési határidő} & \textbf{Alkalmazott} 
+  & \textbf{<?lsmb text('Shipping Point') ?>} 
+  & \textbf{<?lsmb text('Ship via') ?>} \\ [0.5ex]
+  \hline
+  <?lsmb ordnumber ?> & <?lsmb orddate ?> & <?lsmb reqdate ?> & <?lsmb employee ?> & <?lsmb shippingpoint ?> & <?lsmb shipvia ?> \\
+  \hline
+\end{tabularx}
+}
+
+\vspace{0.2cm}
+
+{\footnotesize
+\begin{longtable}{@{\extracolsep{\fill}}r|llrlrr|r}
+
+  \textbf{Sor} 
+  & \textbf{Cikkszám}
+  & \textbf{Megnevezés} 
+  & \textbf{Menny.} 
+  & \textbf{Me} 
+  & \textbf{Egységár} 
+  & \textbf{E\%} 
+  & \textbf{Összeg} 
+\endhead
+\hline \hline
+<?lsmb FOREACH number ?>
+<?lsmb lc = loop.count - 1 ?>
+  <?lsmb runningnumber.${lc} ?> & 
+  <?lsmb number.${lc} ?> & 
+  <?lsmb INCLUDE multiline string = description.${lc} ?> & 
+  <?lsmb qty.${lc} ?> & 
+  <?lsmb unit.${lc} ?> &
+  <?lsmb sellprice.${lc} ?> &
+  <?lsmb discountrate.${lc} ?> &
+  <?lsmb linetotal.${lc} ?> \\
+<?lsmb END ?>
+\hline \hline
+
+\multicolumn{7}{r|} {\textbf{Nettó összeg}} & {\textbf{<?lsmb subtotal ?>}} \\* [1.5em]
+
+\multicolumn{6}{r|}{ÁFA tartalma} & {ÁFA alapja} & {ÁFA összege} \\* [0.2em]
+<?lsmb FOREACH tax ?>
+<?lsmb lc = loop.count - 1 ?>
+\multicolumn{6}{r|}{\textbf{<?lsmb taxdescription.${lc} ?>}} & {<?lsmb taxbase.${lc} ?>} & {\textbf{<?lsmb tax.${lc} ?>}} \\* [0.2em]
+<?lsmb END ?>
+\hline
+\multicolumn{7}{r|} {\MakeUppercase{\textbf{A rendelés végösszege}}} & {\textbf{<?lsmb quototal ?>}} \\
+\multicolumn{7}{l}{Azaz: <?lsmb text_amount ?> <?lsmb currency ?>}\\ [0.5em]
+
+\hline
+
+\end{longtable}
+
+
+\parbox{\textwidth}{
+
+\vspace{0.2cm}
+
+\hfill
+A feltüntetett összegek <?lsmb currency ?>-ban értendőek.
+
+\vspace{12pt}
+
+{\footnotesize 
+<?lsmb FOREACH P IN notes.split('\n') ?>
+<?lsmb P ?>\medskip
+<?lsmb END ?>
+}
+}
+
+\vfill
+
+}
+\vspace{1cm}
+
+\centerline{\textbf{Köszönjük a megrendelését!}}
+\small \centerline{LedgerSMB 1.3 integrált ügyviteli rendszer - www.startit.hu}
+\usebox{\ftr}
+
+\end{document}
+<?lsmb END ?>
+
